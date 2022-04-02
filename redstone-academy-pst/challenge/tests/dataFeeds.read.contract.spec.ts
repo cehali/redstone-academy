@@ -177,7 +177,7 @@ describe("Data feeds contract - read", () => {
         },
       });
 
-      expect(errorMessage).toBe("Data feed with id invalidId do not exist");
+      expect(errorMessage).toBe("Data feed with id invalidId does not exist");
     });
   });
 });

@@ -20,7 +20,7 @@ export const getDataFeedDetailsById = (
   const dataFeedDetails = state.dataFeeds[id];
 
   if (!dataFeedDetails) {
-    throw new ContractError(`Data feed with id ${id} do not exist`);
+    throw new ContractError(`Data feed with id ${id} does not exist`);
   }
 
   return { result: { ...dataFeedDetails, id: id } };

@@ -29,6 +29,12 @@ export const registerNode = (
     throw new ContractError(`Node with owner ${caller} already exists`);
   }
 
+  if (!state.dataFeeds[data.dataFeedId]) {
+    throw new ContractError(
+      `Data feed with id ${data.dataFeedId} does not exist`
+    );
+  }
+
   state.nodes[caller] = data;
 
   return { state };

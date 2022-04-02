@@ -190,7 +190,7 @@ describe("Nodes contract - read", () => {
       });
 
       expect(errorMessage).toBe(
-        "Node with address invalidNodeAddress do not exist"
+        "Node with address invalidNodeAddress does not exist"
       );
     });
   });

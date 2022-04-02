@@ -66,7 +66,15 @@ describe("Nodes contract - write", () => {
       canEvolve: true,
       contractAdmins: [walletAddress],
       nodes: {},
-      dataFeeds: {},
+      dataFeeds: {
+        testId: {
+          name: "testName",
+          logo: "testLogo",
+          description: "testDescription",
+          manifestTxId: "testManifestId",
+          admin: walletAddress,
+        },
+      },
     };
 
     const contractTxId = await smartweave.createContract.deploy({
@@ -167,6 +175,16 @@ describe("Nodes contract - write", () => {
       });
       expect(errorMessage).toBe(
         `Node with owner ${walletAddress} already exists`
+      );
+    });
+
+    test("throw error if invalid data feed id", async () => {
+      const { errorMessage } = await contract.dryWrite<NodesDataFeedsInput>({
+        function: "registerNode",
+        data: { ...testNodeDetails, dataFeedId: "invalidDataFeedId" },
+      });
+      expect(errorMessage).toBe(
+        "Data feed with id invalidDataFeedId does not exist"
       );
     });
   });

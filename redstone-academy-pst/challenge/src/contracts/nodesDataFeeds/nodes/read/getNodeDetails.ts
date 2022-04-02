@@ -20,7 +20,7 @@ export const getNodeDetails = (
   const nodeDetails = state.nodes[nodeAddress];
 
   if (!nodeDetails) {
-    throw new ContractError(`Node with address ${nodeAddress} do not exist`);
+    throw new ContractError(`Node with address ${nodeAddress} does not exist`);
   }
 
   return { result: { ...nodeDetails, address: nodeAddress } };
