@@ -13,11 +13,11 @@ import {
   NodesDataFeedsInput,
   NodesDataFeedsState,
 } from "../src/contracts/nodesDataFeeds/types";
-import { mockNodes } from "./helpers/nodes.mock";
 import { addFunds } from "../utils/addFunds";
 import { mineBlock } from "../utils/mineBlock";
+import { mockDataFeeds } from "./helpers/dataFeeds.mock";
 
-describe("Nodes contract - read", () => {
+describe("Data feeds contract - read", () => {
   let contractSrc: string;
   let wallet: JWKInterface;
   let walletAddress: string;
@@ -28,12 +28,12 @@ describe("Nodes contract - read", () => {
   let contract: Contract<NodesDataFeedsState>;
 
   beforeAll(async () => {
-    arlocal = new ArLocal(1820, false);
+    arlocal = new ArLocal(1822, false);
     await arlocal.start();
 
     arweave = Arweave.init({
       host: "localhost",
-      port: 1820,
+      port: 1822,
       protocol: "http",
       logging: false,
     });
@@ -53,8 +53,8 @@ describe("Nodes contract - read", () => {
     initialState = {
       canEvolve: true,
       contractAdmins: [walletAddress],
-      nodes: mockNodes,
-      dataFeeds: {},
+      nodes: {},
+      dataFeeds: mockDataFeeds,
     };
 
     const contractTxId = await smartweave.createContract.deploy({
@@ -72,126 +72,112 @@ describe("Nodes contract - read", () => {
     await arlocal.stop();
   });
 
-  describe("listNodes", () => {
-    test("list all nodes", async () => {
+  describe("listDataFeeds", () => {
+    test("list all data feeds", async () => {
       const { result } = await contract.dryWrite<NodesDataFeedsInput>({
-        function: "listNodes",
+        function: "listDataFeeds",
         data: {},
       });
-      const expectedNodes = [
-        "testNodeAddress1",
-        "testNodeAddress2",
-        "testNodeAddress3",
-        "testNodeAddress4",
-        "testNodeAddress5",
-        "testNodeAddress6",
+      const expectedDataFeeds = [
+        "testId1",
+        "testId2",
+        "testId3",
+        "testId4",
+        "testId5",
+        "testId6",
       ];
-      expect(result).toEqual(expectedNodes);
+      expect(result).toEqual(expectedDataFeeds);
     });
 
-    test("list nodes limited to 2", async () => {
+    test("list data feeds limited to 2", async () => {
       const { result } = await contract.dryWrite<NodesDataFeedsInput>({
-        function: "listNodes",
+        function: "listDataFeeds",
         data: {
           limit: 2,
         },
       });
-      const expectedNodes = ["testNodeAddress1", "testNodeAddress2"];
-      expect(result).toEqual(expectedNodes);
+      const expectedDataFeeds = ["testId1", "testId2"];
+      expect(result).toEqual(expectedDataFeeds);
     });
 
-    test("list nodes after third", async () => {
+    test("list data feeds after third", async () => {
       const { result } = await contract.dryWrite<NodesDataFeedsInput>({
-        function: "listNodes",
+        function: "listDataFeeds",
         data: {
           startAfter: 3,
         },
       });
-      const expectedNodes = [
-        "testNodeAddress4",
-        "testNodeAddress5",
-        "testNodeAddress6",
-      ];
-      expect(result).toEqual(expectedNodes);
+      const expectedDataFeeds = ["testId4", "testId5", "testId6"];
+      expect(result).toEqual(expectedDataFeeds);
     });
 
-    test("list nodes limited to 3 after second", async () => {
+    test("list data feeds limited to 3 after second", async () => {
       const { result } = await contract.dryWrite<NodesDataFeedsInput>({
-        function: "listNodes",
+        function: "listDataFeeds",
         data: {
           limit: 3,
           startAfter: 2,
         },
       });
-      const expectedNodes = [
-        "testNodeAddress3",
-        "testNodeAddress4",
-        "testNodeAddress5",
-      ];
-      expect(result).toEqual(expectedNodes);
+      const expectedDataFeeds = ["testId3", "testId4", "testId5"];
+      expect(result).toEqual(expectedDataFeeds);
     });
   });
 
-  describe("getNodeDetails", () => {
-    test("get details of first node", async () => {
+  describe("getDataFeedDetailsById", () => {
+    test("get details of first data feed", async () => {
       const { result } = await contract.dryWrite<NodesDataFeedsInput>({
-        function: "getNodeDetails",
+        function: "getDataFeedDetailsById",
         data: {
-          address: "testNodeAddress1",
+          id: "testId1",
         },
       });
-      const expectedNodeDetails = {
-        address: "testNodeAddress1",
+      const expectedDataFeedDetails = {
+        id: "testId1",
         name: "testName1",
         logo: "logo",
         description: "testDescription",
-        dataFeedId: "testId",
-        evmAddress: "testAddress",
-        ipAddress: "testIpAddress",
-        url: "testUrl",
+        manifestTxId: "testManifestId",
+        admin: "testAddress",
       };
-      expect(result).toEqual(expectedNodeDetails);
+      expect(result).toEqual(expectedDataFeedDetails);
     });
 
-    test("get details of middle node", async () => {
+    test("get details of middle data feed", async () => {
       const { result } = await contract.dryWrite<NodesDataFeedsInput>({
-        function: "getNodeDetails",
+        function: "getDataFeedDetailsById",
         data: {
-          address: "testNodeAddress4",
+          id: "testId4",
         },
       });
-      const expectedNodeDetails = {
-        address: "testNodeAddress4",
+      const expectedDataFeedDetails = {
+        id: "testId4",
         name: "testName4",
         logo: "logo",
         description: "testDescription",
-        dataFeedId: "testId",
-        evmAddress: "testAddress",
-        ipAddress: "testIpAddress",
-        url: "testUrl",
+        manifestTxId: "testManifestId",
+        admin: "testAddress",
       };
-      expect(result).toEqual(expectedNodeDetails);
+      expect(result).toEqual(expectedDataFeedDetails);
     });
 
-    test("throw error if no address in input", async () => {
+    test("throw error if no id in input", async () => {
       const { errorMessage } = await contract.dryWrite<NodesDataFeedsInput>({
-        function: "getNodeDetails",
+        function: "getDataFeedDetailsById",
         data: {},
       });
-      expect(errorMessage).toBe("Missing node address");
+      expect(errorMessage).toBe("Missing data feed id");
     });
 
-    test("throw error if invalid address in input", async () => {
+    test("throw error if invalid id in input", async () => {
       const { errorMessage } = await contract.dryWrite<NodesDataFeedsInput>({
-        function: "getNodeDetails",
+        function: "getDataFeedDetailsById",
         data: {
-          address: "invalidNodeAddress",
+          id: "invalidId",
         },
       });
 
-      expect(errorMessage).toBe(
-        "Node with address invalidNodeAddress do not exist"
-      );
+      expect(errorMessage).toBe("Data feed with id invalidId do not exist");
     });
   });
 });

@@ -1,11 +1,11 @@
-import { NodesState } from "../types";
+import { NodesDataFeedsState } from "../../types";
 
 declare const ContractError;
 
 export const removeNode = (
-  state: NodesState,
+  state: NodesDataFeedsState,
   caller: string
-): { state: NodesState } => {
+): { state: NodesDataFeedsState } => {
   const currentNodeState = state.nodes[caller];
 
   if (!currentNodeState) {

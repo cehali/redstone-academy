@@ -1,15 +1,15 @@
 import {
-  NodesState,
-  NodesInput,
+  NodesDataFeedsState,
+  NodesDataFeedsInput,
   GetNodeDetailsInputData,
   GetNodesDetailsResult,
-} from "../types";
+} from "../../types";
 
 declare const ContractError;
 
 export const getNodeDetails = (
-  state: NodesState,
-  input: NodesInput
+  state: NodesDataFeedsState,
+  input: NodesDataFeedsInput
 ): GetNodesDetailsResult => {
   const data = input.data as GetNodeDetailsInputData;
   if (!data?.address) {

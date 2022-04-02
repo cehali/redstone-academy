@@ -1,11 +1,15 @@
-import { NodesState, NodesAction, UpdateNodeDetailInputData } from "../types";
+import {
+  NodesDataFeedsState,
+  NodesDataFeedsAction,
+  UpdateNodeDetailInputData,
+} from "../../types";
 
 declare const ContractError;
 
 export const updateNodeDetails = (
-  state: NodesState,
-  action: NodesAction
-): { state: NodesState } => {
+  state: NodesDataFeedsState,
+  action: NodesDataFeedsAction
+): { state: NodesDataFeedsState } => {
   const data = action.input.data as UpdateNodeDetailInputData;
 
   const currentNodeState = state.nodes[action.caller];

@@ -10,12 +10,22 @@ import {
 import fs from "fs";
 import path from "path";
 import {
-  NodesInput,
-  NodesState,
+  NodesDataFeedsInput,
+  NodesDataFeedsState,
   RegisterNodeInputData,
-} from "../src/contracts/nodes/types";
+} from "../src/contracts/nodesDataFeeds/types";
 import { addFunds } from "../utils/addFunds";
 import { mineBlock } from "../utils/mineBlock";
+
+const testNodeDetails = {
+  name: "testName",
+  logo: "testLogo",
+  description: "testDescription",
+  dataFeedId: "testId",
+  evmAddress: "testAddress",
+  ipAddress: "testIP",
+  url: "testUrl",
+};
 
 describe("Nodes contract - write", () => {
   let contractSrc: string;
@@ -24,8 +34,8 @@ describe("Nodes contract - write", () => {
   let arweave: Arweave;
   let arlocal: ArLocal;
   let smartweave: SmartWeave;
-  let initialState: NodesState;
-  let contract: Contract<NodesState>;
+  let initialState: NodesDataFeedsState;
+  let contract: Contract<NodesDataFeedsState>;
 
   beforeAll(async () => {
     arlocal = new ArLocal(1821, false);
@@ -46,7 +56,7 @@ describe("Nodes contract - write", () => {
     walletAddress = await arweave.wallets.jwkToAddress(wallet);
 
     contractSrc = fs.readFileSync(
-      path.join(__dirname, "../dist/nodes/nodes.contract.js"),
+      path.join(__dirname, "../dist/nodesDataFeeds.contract.js"),
       "utf8"
     );
   });
@@ -56,6 +66,7 @@ describe("Nodes contract - write", () => {
       canEvolve: true,
       contractAdmins: [walletAddress],
       nodes: {},
+      dataFeeds: {},
     };
 
     const contractTxId = await smartweave.createContract.deploy({
@@ -75,16 +86,7 @@ describe("Nodes contract - write", () => {
 
   describe("registerNode", () => {
     test("should add new node when register", async () => {
-      const testNodeDetails = {
-        name: "testName",
-        logo: "testLogo",
-        description: "testDescription",
-        dataFeedId: "testId",
-        evmAddress: "testAddress",
-        ipAddress: "testIP",
-        url: "testUrl",
-      };
-      await contract.writeInteraction<NodesInput>({
+      await contract.writeInteraction<NodesDataFeedsInput>({
         function: "registerNode",
         data: testNodeDetails,
       });
@@ -119,12 +121,12 @@ describe("Nodes contract - write", () => {
         ipAddress: "testIP",
         url: "testUrl",
       };
-      await contract.writeInteraction<NodesInput>({
+      await contract.writeInteraction<NodesDataFeedsInput>({
         function: "registerNode",
         data: testFirstNodeDetails,
       });
       await mineBlock(arweave);
-      const result = await contract.dryWrite<NodesInput>(
+      const result = await contract.dryWrite<NodesDataFeedsInput>(
         {
           function: "registerNode",
           data: testSecondNodeDetails,
@@ -146,7 +148,7 @@ describe("Nodes contract - write", () => {
         evmAddress: "testAddress",
         url: "testUrl",
       };
-      const { errorMessage } = await contract.dryWrite<NodesInput>({
+      const { errorMessage } = await contract.dryWrite<NodesDataFeedsInput>({
         function: "registerNode",
         data: invalidNodeDetails as RegisterNodeInputData,
       });
@@ -154,23 +156,14 @@ describe("Nodes contract - write", () => {
     });
 
     test("throw error if caller already has node", async () => {
-      const nodeDetails = {
-        name: "testName",
-        logo: "testLogo",
-        description: "testDescription",
-        dataFeedId: "testId",
-        ipAddress: "testIP",
-        evmAddress: "testAddress",
-        url: "testUrl",
-      };
-      await contract.writeInteraction<NodesInput>({
+      await contract.writeInteraction<NodesDataFeedsInput>({
         function: "registerNode",
-        data: nodeDetails,
+        data: testNodeDetails,
       });
       await mineBlock(arweave);
-      const { errorMessage } = await contract.dryWrite<NodesInput>({
+      const { errorMessage } = await contract.dryWrite<NodesDataFeedsInput>({
         function: "registerNode",
-        data: nodeDetails,
+        data: testNodeDetails,
       });
       expect(errorMessage).toBe(
         `Node with owner ${walletAddress} already exists`
@@ -180,16 +173,7 @@ describe("Nodes contract - write", () => {
 
   describe("updateNodeDetails", () => {
     beforeEach(async () => {
-      const testNodeDetails = {
-        name: "testName",
-        logo: "testLogo",
-        description: "testDescription",
-        dataFeedId: "testId",
-        evmAddress: "testAddress",
-        ipAddress: "testIP",
-        url: "testUrl",
-      };
-      await contract.writeInteraction<NodesInput>({
+      await contract.writeInteraction<NodesDataFeedsInput>({
         function: "registerNode",
         data: testNodeDetails,
       });
@@ -206,7 +190,7 @@ describe("Nodes contract - write", () => {
         ipAddress: "newTestIP",
         url: "newTestUrl",
       };
-      await contract.writeInteraction<NodesInput>({
+      await contract.writeInteraction<NodesDataFeedsInput>({
         function: "updateNodeDetails",
         data: newNodeDetails,
       });
@@ -226,7 +210,7 @@ describe("Nodes contract - write", () => {
         ipAddress: "newTestIP",
         url: "newTestUrl",
       };
-      const { errorMessage } = await contract.dryWrite<NodesInput>(
+      const { errorMessage } = await contract.dryWrite<NodesDataFeedsInput>(
         {
           function: "updateNodeDetails",
           data: newNodeDetails,
@@ -239,16 +223,7 @@ describe("Nodes contract - write", () => {
 
   describe("removeNode", () => {
     beforeEach(async () => {
-      const testNodeDetails = {
-        name: "testName",
-        logo: "testLogo",
-        description: "testDescription",
-        dataFeedId: "testId",
-        evmAddress: "testAddress",
-        ipAddress: "testIP",
-        url: "testUrl",
-      };
-      await contract.writeInteraction<NodesInput>({
+      await contract.writeInteraction<NodesDataFeedsInput>({
         function: "registerNode",
         data: testNodeDetails,
       });
@@ -256,7 +231,7 @@ describe("Nodes contract - write", () => {
     });
 
     test("should remove node", async () => {
-      await contract.writeInteraction<NodesInput>({
+      await contract.writeInteraction<NodesDataFeedsInput>({
         function: "removeNode",
         data: {},
       });
@@ -267,7 +242,7 @@ describe("Nodes contract - write", () => {
     });
 
     test("throw error if invalid owner address", async () => {
-      const { errorMessage } = await contract.dryWrite<NodesInput>(
+      const { errorMessage } = await contract.dryWrite<NodesDataFeedsInput>(
         {
           function: "removeNode",
           data: {},

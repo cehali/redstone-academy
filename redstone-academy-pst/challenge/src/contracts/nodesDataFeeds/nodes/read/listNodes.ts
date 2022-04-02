@@ -1,15 +1,15 @@
 import {
-  NodesState,
-  NodesInput,
-  ListNodesInputData,
-  ListNodesResult,
-} from "../types";
+  NodesDataFeedsState,
+  NodesDataFeedsInput,
+  ListInputData,
+  ListResult,
+} from "../../types";
 
 export const listNodes = (
-  state: NodesState,
-  input: NodesInput
-): ListNodesResult => {
-  const data = input.data as ListNodesInputData;
+  state: NodesDataFeedsState,
+  input: NodesDataFeedsInput
+): ListResult => {
+  const data = input.data as ListInputData;
   let nodesArray = Object.keys(state.nodes);
 
   if (data?.startAfter) {

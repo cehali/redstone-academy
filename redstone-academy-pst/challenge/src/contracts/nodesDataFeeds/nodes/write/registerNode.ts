@@ -1,11 +1,15 @@
-import { NodesState, NodesAction, RegisterNodeInputData } from "../types";
+import {
+  NodesDataFeedsState,
+  NodesDataFeedsAction,
+  RegisterNodeInputData,
+} from "../../types";
 
 declare const ContractError;
 
 export const registerNode = (
-  state: NodesState,
-  action: NodesAction
-): { state: NodesState } => {
+  state: NodesDataFeedsState,
+  action: NodesDataFeedsAction
+): { state: NodesDataFeedsState } => {
   const data = action.input.data as RegisterNodeInputData;
 
   const isValidData =
