@@ -18,7 +18,6 @@ import { addFunds } from "../utils/addFunds";
 import { mineBlock } from "../utils/mineBlock";
 
 const testId = "testId";
-
 const testDataFeedDetails = {
   id: testId,
   name: "testName",

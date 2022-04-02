@@ -1,19 +1,64 @@
+import Arweave from "arweave";
+import { JWKInterface } from "arweave/node/lib/wallet";
+import { NodesDataFeedsState } from "../contracts/nodesDataFeeds/types";
+import {
+  LoggerFactory,
+  SmartWeave,
+  SmartWeaveNodeFactory,
+} from "redstone-smartweave";
+import fs from "fs";
+import path from "path";
+
+let contractSrc: string;
+let wallet: JWKInterface;
+let walletAddress: string;
+let initialState: NodesDataFeedsState;
+let arweave: Arweave;
+let smartweave: SmartWeave;
+
 (async () => {
-// ~~ Declare variables ~~
+  arweave = Arweave.init({
+    host: "testnet.redstone.tools",
+    port: 443,
+    protocol: "https",
+  });
 
-// ~~ Initialize Arweave ~~
+  LoggerFactory.INST.logLevel("error");
 
-// ~~ Initialize `LoggerFactory` ~~
+  smartweave = SmartWeaveNodeFactory.memCached(arweave);
+  wallet = await arweave.wallets.generate();
+  const address = await arweave.wallets.getAddress(wallet);
+  await arweave.api.get(`/mint/${address}/1000000000000000`);
+  walletAddress = await arweave.wallets.jwkToAddress(wallet);
 
-// ~~ Initialize SmartWeave ~~
+  contractSrc = fs.readFileSync(
+    path.join(__dirname, "../../dist/nodesDataFeeds.contract.js"),
+    "utf8"
+  );
+  const stateFromFile: NodesDataFeedsState = JSON.parse(
+    fs.readFileSync(
+      path.join(
+        __dirname,
+        "../../dist/contracts/nodesDataFeeds/initial-state.json"
+      ),
+      "utf8"
+    )
+  );
 
-// ~~ Generate wallet and add some funds ~~
+  initialState = {
+    ...stateFromFile,
+    ...{
+      owner: walletAddress,
+    },
+  };
 
-// ~~ Read contract source and initial state files ~~
+  const contractTxId = await smartweave.createContract.deploy({
+    wallet,
+    initState: JSON.stringify(initialState),
+    src: contractSrc,
+  });
 
-// ~~ Override contract's owner address with the generated wallet address ~~
+  console.log(contractTxId);
 
-// ~~ Deploy contract ~~
-
-// ~~ Log contract id to the console ~~
+  await arweave.api.get("mine");
 })();
