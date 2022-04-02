@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import { arweave, smartweave } from '../pst-contract';
 import { deployedContracts } from '../deployed-contracts';
-import { PstState } from '@/contracts/types/types';
+import { PstState } from '@/contracts/contract/types/types';
 
 Vue.use(Vuex);
 
