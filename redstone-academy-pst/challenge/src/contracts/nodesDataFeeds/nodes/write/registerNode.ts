@@ -11,6 +11,7 @@ export const registerNode = (
   action: NodesDataFeedsAction
 ): { state: NodesDataFeedsState } => {
   const data = action.input.data as RegisterNodeInputData;
+  const caller = action.caller;
 
   const isValidData =
     data.name &&
@@ -24,11 +25,11 @@ export const registerNode = (
     throw new ContractError("Invalid node data");
   }
 
-  if (state.nodes[action.caller]) {
-    throw new ContractError(`Node with owner ${action.caller} already exists`);
+  if (state.nodes[caller]) {
+    throw new ContractError(`Node with owner ${caller} already exists`);
   }
 
-  state.nodes[action.caller] = data;
+  state.nodes[caller] = data;
 
   return { state };
 };

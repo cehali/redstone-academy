@@ -16,11 +16,12 @@ export const getNodeDetails = (
     throw new ContractError("Missing node address");
   }
 
-  const nodeDetails = state.nodes[data.address];
+  const nodeAddress = data.address;
+  const nodeDetails = state.nodes[nodeAddress];
 
   if (!nodeDetails) {
-    throw new ContractError(`Node with address ${data.address} do not exist`);
+    throw new ContractError(`Node with address ${nodeAddress} do not exist`);
   }
 
-  return { result: { ...nodeDetails, address: data.address } };
+  return { result: { ...nodeDetails, address: nodeAddress } };
 };

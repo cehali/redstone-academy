@@ -16,11 +16,12 @@ export const getDataFeedDetailsById = (
     throw new ContractError("Missing data feed id");
   }
 
-  const dataFeedDetails = state.dataFeeds[data.id];
+  const id = data.id;
+  const dataFeedDetails = state.dataFeeds[id];
 
   if (!dataFeedDetails) {
-    throw new ContractError(`Data feed with id ${data.id} do not exist`);
+    throw new ContractError(`Data feed with id ${id} do not exist`);
   }
 
-  return { result: { ...dataFeedDetails, id: data.id } };
+  return { result: { ...dataFeedDetails, id: id } };
 };
